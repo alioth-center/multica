@@ -23,7 +23,7 @@ function positionGraph(data: DependencyGraph) {
     marginx: 20,
     marginy: 20,
     nodesep: 18,
-    ranksep: 60,
+    ranksep: 92,
   });
   graph.setDefaultEdgeLabel(() => ({}));
   for (const node of data.nodes)
@@ -34,7 +34,60 @@ function positionGraph(data: DependencyGraph) {
     }
   }
   dagre.layout(graph);
+  for (const id of graph.nodes()) {
+    const y = graph.node(id).y;
+    for (const incoming of [true, false]) {
+      const edges = (incoming ? graph.inEdges(id) : graph.outEdges(id)) ?? [];
+      const ports = edges.map((edge) => {
+        const { points } = graph.edge(edge);
+        const end = points.length - 1;
+        const tip = points[incoming ? end : 0];
+        const adjacentY = points.length === 3
+          ? graph.node(incoming ? edge.v : edge.w).y
+          : points[incoming ? end - 2 : 2].y;
+        return { tip, adjacentY };
+      });
+      // Match the order of the adjacent lanes so the fan does not twist at the card.
+      ports.sort((a, b) => a.adjacentY - b.adjacentY);
+      const spacing = Math.min(14, (height - 24) / Math.max(1, ports.length - 1));
+      ports.forEach(({ tip }, index) => {
+        tip.y = y + (index - (ports.length - 1) / 2) * spacing;
+      });
+    }
+  }
   return graph;
+}
+
+function dependencyPath(
+  graph: ReturnType<typeof positionGraph>,
+  edge: { v: string; w: string },
+) {
+  const source = graph.node(edge.v);
+  const target = graph.node(edge.w);
+  const points = graph.edge(edge).points;
+  let x = source.x + width / 2;
+  let y = points[0].y;
+  let path = `M ${x} ${y}`;
+
+  function curveTo(nextX: number, nextY: number) {
+    const midX = (x + nextX) / 2;
+    path += ` C ${midX} ${y}, ${midX} ${nextY}, ${nextX} ${nextY}`;
+    x = nextX;
+    y = nextY;
+  }
+
+  // Dagre alternates gap and rank waypoints. Cross each intervening card
+  // column in its assigned lane and bend only in the gaps between columns.
+  for (let i = 2; i < points.length - 1; i += 2) {
+    const lane = points[i];
+    curveTo(lane.x - width / 2, lane.y);
+    x = lane.x + width / 2;
+    path += ` H ${x}`;
+  }
+  const arrowX = target.x - width / 2 - 4;
+  curveTo(arrowX - 8, points[points.length - 1].y);
+  path += ` H ${arrowX}`;
+  return path;
 }
 
 export default function ProjectDependencyGraph({
@@ -92,7 +145,7 @@ export default function ProjectDependencyGraph({
           style={{ width: graph.graph().width, height: graph.graph().height }}
         >
           <svg
-            className="pointer-events-none absolute inset-0 text-muted-foreground"
+            className="pointer-events-none absolute inset-0 text-faint-foreground"
             width="100%"
             height="100%"
             aria-hidden="true"
@@ -100,25 +153,30 @@ export default function ProjectDependencyGraph({
             <defs>
               <marker
                 id={arrow}
-                markerWidth="7"
-                markerHeight="7"
+                markerUnits="userSpaceOnUse"
+                markerWidth="9"
+                markerHeight="10"
                 refX="7"
-                refY="3.5"
+                refY="5"
                 orient="auto"
               >
-                <path d="M0 0 L7 3.5 L0 7 Z" fill="currentColor" />
+                <path
+                  d="m2 1.5 5 3.5-5 3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </marker>
             </defs>
             {graph.edges().map((edge) => (
-              <polyline
+              <path
                 key={edge.v + edge.w}
-                points={graph
-                  .edge(edge)
-                  .points.map((p: { x: number; y: number }) => `${p.x},${p.y}`)
-                  .join(" ")}
+                d={dependencyPath(graph, edge)}
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.5"
+                strokeWidth="1.4"
                 markerEnd={`url(#${arrow})`}
               />
             ))}

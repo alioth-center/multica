@@ -32,13 +32,13 @@ test("edit a prerequisite and open the dependent issue from the project graph", 
       .getByTitle("Dependency graph", { exact: true })
       .click();
     const graph = page.getByRole("region", { name: "Dependency graph" });
-    await expect(graph.locator("polyline")).toHaveCount(1);
+    await expect(graph.locator("path[marker-end]")).toHaveCount(1);
     const dependent = graph.getByRole("button", { name: new RegExp(b.identifier) });
     await expect(dependent).toHaveAccessibleName(new RegExp(`Waits for ${a.identifier}`));
     await dependent.click();
     await remove.click();
     await expect(remove).toHaveCount(0);
-    await expect(graph.locator("polyline")).toHaveCount(0);
+    await expect(graph.locator("path[marker-end]")).toHaveCount(0);
     await expect(graph.getByRole("button")).toHaveCount(2);
   } finally {
     await api.cleanup();
