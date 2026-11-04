@@ -311,7 +311,18 @@
     "show_sub_issues": "하위 태스크 표시",
     "layout_options": "{{layout}} 옵션"
   },
+  "dependencies": {
+    "direction": "선행 태스크 → 후속 태스크",
+    "waits_for": "선행 태스크",
+    "add": "선행 태스크 추가",
+    "search": "프로젝트 태스크 검색",
+    "remove": "선행 태스크 {{identifier}} 제거",
+    "cycle": "순환 의존성이 생기는 관계는 추가할 수 없습니다.",
+    "save_failed": "의존성을 저장하지 못했습니다. 다시 시도하세요.",
+    "empty": "이 프로젝트에 태스크가 없습니다."
+  },
   "view": {
+    "dependency": "의존성 그래프",
     "tooltip_board": "보드 보기",
     "tooltip_list": "리스트 보기",
     "tooltip_table": "테이블 보기",

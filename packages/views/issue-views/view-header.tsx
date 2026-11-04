@@ -347,6 +347,16 @@ export function IssueViewHeader({
     if (activeView) actions.save(activeView, issueViewDefinitionFromState(storeApi.getState()));
   };
 
+  if (base.kind === "project" && controller.viewMode === "dependency") {
+    return (
+      <PageHeader>
+        <h1 className="min-w-0 flex-1 truncate">{baseName} · {t(($) => $.view.dependency)}</h1>
+        <IssueDisplayControls scopedIssues={[]} allowGantt={controller.allowGantt} allowDependency hideFilter iconOnly />
+        {trailing}
+      </PageHeader>
+    );
+  }
+
   const title = (
     <>
       <RefreshablePageIcon refreshing={controller.isRefreshing}>
@@ -546,6 +556,7 @@ export function IssueViewHeader({
           <IssueDisplayControls
             hideFilter
             scopedIssues={controller.surfaceIssues}
+            allowDependency={base.kind === "project"}
             allowGantt={controller.allowGantt}
             facetCountsExact={controller.facetCountsExact}
             tableFacetCounts={controller.tableFacetCounts}

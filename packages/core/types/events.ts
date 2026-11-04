@@ -77,6 +77,7 @@ export type WSEventType =
   | "label:deleted"
   | "issue_labels:changed"
   | "issue_unread:changed"
+  | "issue_dependencies:changed"
   | "issue_metadata:changed"
   | "issue_properties:changed"
   | "property:created"
@@ -625,6 +626,7 @@ export interface WSEventPayloadMap {
   "issue:updated": IssueUpdatedPayload;
   "issue:deleted": IssueDeletedPayload;
   "issue_attachments:changed": IssueAttachmentsChangedPayload;
+  "issue_dependencies:changed": { project_id: string };
   "issue_labels:changed": IssueLabelsChangedPayload;
   "issue_unread:changed": IssueUnreadChangedPayload;
   "issue_properties:changed": IssuePropertiesChangedPayload;

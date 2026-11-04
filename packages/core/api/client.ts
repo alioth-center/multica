@@ -1,3 +1,4 @@
+import { dependencyGraphSchema, type DependencyGraph } from "./dependency-graph";
 import type { ZodType } from "zod";
 import { AgentRuntimeSchema, EMPTY_RUNTIME } from "../runtimes/schema";
 import type { IssueWakeup, IssueWakeupInput, IssueWakeupSummaryRow, PausedWakeup, SystemWakeup, WakeupRun, WorkspaceSystemWakeup } from "../types/issue-wakeup";
@@ -4221,6 +4222,18 @@ export class ApiClient {
 
   async deleteProject(id: string): Promise<void> {
     await this.fetch(`/api/projects/${id}`, { method: "DELETE" });
+  }
+
+  async projectDependencyGraph(projectId: string): Promise<DependencyGraph> {
+    const endpoint = `/api/projects/${encodeURIComponent(projectId)}/dependency-graph`;
+    const raw = await this.fetch<unknown>(endpoint);
+    return parseWithFallback<DependencyGraph>(raw, dependencyGraphSchema, { nodes: [], edges: [] }, { endpoint });
+  }
+
+  async setIssueDependency(issueId: string, prerequisite: string, add: boolean): Promise<void> {
+    await this.fetch(`/api/issues/${encodeURIComponent(issueId)}/dependencies/${encodeURIComponent(prerequisite)}`, {
+      method: add ? "PUT" : "DELETE",
+    });
   }
 
   // Project resources

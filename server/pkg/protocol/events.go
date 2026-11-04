@@ -3,11 +3,12 @@ package protocol
 // Event types for WebSocket communication between server, web clients, and daemon.
 const (
 	// Issue events
-	EventIssueCreated            = "issue:created"
-	EventIssueUpdated            = "issue:updated"
-	EventIssueDeleted            = "issue:deleted"
-	EventIssueMetadataChanged    = "issue_metadata:changed"
-	EventIssueAttachmentsChanged = "issue_attachments:changed"
+	EventIssueCreated             = "issue:created"
+	EventIssueUpdated             = "issue:updated"
+	EventIssueDeleted             = "issue:deleted"
+	EventIssueDependenciesChanged = "issue_dependencies:changed"
+	EventIssueMetadataChanged     = "issue_metadata:changed"
+	EventIssueAttachmentsChanged  = "issue_attachments:changed"
 	// Personal: one member's unread mark on an issue changed (MUL-8438).
 	EventIssueUnreadChanged = "issue_unread:changed"
 
