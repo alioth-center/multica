@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { StoreApi } from "zustand/vanilla";
 import type { IssueViewState } from "@multica/core/issues/stores/view-store";
 import type { IssueViewBaseline } from "@multica/core/issue-views/baseline";
@@ -56,6 +56,8 @@ import {
   type FilterDependencyKind,
   type IssueSurfaceController,
 } from "./use-issue-surface-controller";
+
+const ProjectDependencyGraph = lazy(() => import("../components/project-dependency-graph"));
 
 export interface IssueSurfaceRenderContext {
   controller: IssueSurfaceController;
@@ -291,7 +293,11 @@ function IssueSurfaceContent({
             purpose. Row fetching is suspended while it is down, so every
             branch below would render an unexplained empty surface with no way
             out. */}
-        {controller.filterDependencyError ? (
+        {controller.viewMode === "dependency" && scope.type === "project" ? (
+          <Suspense fallback={<Skeleton className="m-4 h-20 w-52" />}>
+            <ProjectDependencyGraph projectId={scope.projectId} />
+          </Suspense>
+        ) : controller.filterDependencyError ? (
           <FilterDependencyErrorState
             kind={controller.filterDependencyError.kind}
             onRetry={controller.filterDependencyError.retry}
@@ -400,7 +406,7 @@ function IssueSurfaceContent({
           </div>
         )}
         </IssuePeekHost>
-        {shouldShowBatchToolbar && (
+        {controller.viewMode !== "dependency" && shouldShowBatchToolbar && (
           <BatchActionToolbar
             issues={
               controller.viewMode === "table" ? tableLoadedIssues : issues

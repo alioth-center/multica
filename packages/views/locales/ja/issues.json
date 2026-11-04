@@ -311,7 +311,18 @@
     "show_sub_issues": "サブタスクを表示",
     "layout_options": "{{layout}}のオプション"
   },
+  "dependencies": {
+    "direction": "先行タスク → 後続タスク",
+    "waits_for": "先行タスク",
+    "add": "先行タスクを追加",
+    "search": "プロジェクトのタスクを検索",
+    "remove": "先行タスク {{identifier}} を削除",
+    "cycle": "循環する依存関係は追加できません。",
+    "save_failed": "依存関係を保存できませんでした。もう一度お試しください。",
+    "empty": "このプロジェクトにはタスクがありません。"
+  },
   "view": {
+    "dependency": "依存関係図",
     "tooltip_board": "ボード表示",
     "tooltip_list": "リスト表示",
     "tooltip_table": "テーブル表示",

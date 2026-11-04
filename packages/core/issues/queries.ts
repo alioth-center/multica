@@ -47,6 +47,8 @@ export interface IssueSortParam {
 
 export const issueKeys = {
   all: (wsId: string) => ["issues", wsId] as const,
+  dependencyGraphs: (wsId: string) => [...issueKeys.all(wsId), "dependency-graph"] as const,
+  dependencyGraph: (wsId: string, projectId: string) => [...issueKeys.dependencyGraphs(wsId), projectId] as const,
   /** PREFIX for invalidation — no sort. */
   list: (wsId: string) => [...issueKeys.all(wsId), "list"] as const,
   /** FULL KEY for queryOptions — includes sort. */

@@ -311,7 +311,18 @@
     "show_sub_issues": "显示子任务",
     "layout_options": "{{layout}}选项"
   },
+  "dependencies": {
+    "direction": "前置任务 → 等待它的任务",
+    "waits_for": "等待完成的任务",
+    "add": "添加前置任务",
+    "search": "搜索项目任务",
+    "remove": "移除前置任务 {{identifier}}",
+    "cycle": "这两个任务会形成循环依赖。",
+    "save_failed": "未能保存依赖关系，请重试。",
+    "empty": "项目里还没有任务。"
+  },
   "view": {
+    "dependency": "依赖图",
     "tooltip_board": "看板视图",
     "tooltip_list": "列表视图",
     "tooltip_table": "表格视图",

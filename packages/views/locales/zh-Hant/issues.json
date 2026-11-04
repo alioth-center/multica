@@ -311,7 +311,18 @@
     "show_sub_issues": "顯示子任務",
     "layout_options": "{{layout}}選項"
   },
+  "dependencies": {
+    "direction": "前置任務 → 等待它的任務",
+    "waits_for": "等待完成的任務",
+    "add": "新增前置任務",
+    "search": "搜尋專案任務",
+    "remove": "移除前置任務 {{identifier}}",
+    "cycle": "這兩個任務會形成循環相依。",
+    "save_failed": "無法儲存相依關係，請再試一次。",
+    "empty": "專案裡還沒有任務。"
+  },
   "view": {
+    "dependency": "相依圖",
     "tooltip_board": "看板檢視",
     "tooltip_list": "列表檢視",
     "tooltip_table": "表格檢視",

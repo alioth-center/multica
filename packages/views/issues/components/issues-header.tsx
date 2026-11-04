@@ -8,6 +8,7 @@ import {
   CalendarClock,
   CalendarDays,
   ChartGantt,
+  Network,
   ChevronDown,
   CircleDashed,
   CircleDot,
@@ -1792,12 +1793,14 @@ const LAYOUTS: { mode: ViewMode; Icon: typeof List }[] = [
   { mode: "table", Icon: Table2 },
   { mode: "swimlane", Icon: Waves },
   { mode: "gantt", Icon: ChartGantt },
+  { mode: "dependency", Icon: Network },
 ];
 
 export function IssueDisplayControls({
   scopedIssues,
   hideViewToggle = false,
   allowGantt = false,
+  allowDependency = false,
   dateFilter = null,
   onDateFilterChange,
   facetCountsExact = true,
@@ -1822,6 +1825,7 @@ export function IssueDisplayControls({
   // /my-issues, actor panel) ignore viewMode === "gantt" and would silently
   // fall back to List if the option were exposed there. Keep Gantt opt-in.
   allowGantt?: boolean;
+  allowDependency?: boolean;
   /**
    * Whether `scopedIssues` covers the surface's full window. Table does not
    * use loaded rows for counts; server-paged List, Board, and Swimlane follow
@@ -2001,7 +2005,7 @@ export function IssueDisplayControls({
           : t(($) => $.table.group_none);
   // A Gantt layout persisted on a surface without Gantt renders as List.
   const layout: ViewMode = viewMode === "gantt" && !allowGantt ? "list" : viewMode;
-  const layouts = LAYOUTS.filter(({ mode }) => mode !== "gantt" || allowGantt);
+  const layouts = LAYOUTS.filter(({ mode }) => (mode !== "gantt" || allowGantt) && (mode !== "dependency" || allowDependency));
   const LayoutIcon = hideViewToggle
     ? SlidersHorizontal
     : LAYOUTS.find(({ mode }) => mode === layout)!.Icon;
@@ -2085,7 +2089,7 @@ export function IssueDisplayControls({
                 aria-label={t(($) => $.view.section)}
                 className={cn(
                   "mb-3 grid gap-0.5 rounded-lg bg-muted p-0.5",
-                  layouts.length === 5 ? "grid-cols-5" : "grid-cols-4",
+                  layouts.length === 6 ? "grid-cols-3" : layouts.length === 5 ? "grid-cols-5" : "grid-cols-4",
                 )}
               >
                 {layouts.map(({ mode, Icon }) => (

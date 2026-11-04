@@ -1083,7 +1083,7 @@ export function useRealtimeSync(
     // Event types handled by specific handlers below -- skip generic refresh
     const specificEvents = new Set([
       "workspace:updated",
-      "issue:updated", "issue:created", "issue:deleted", "issue_attachments:changed", "issue_labels:changed", "issue_unread:changed", "issue_metadata:changed", "issue_properties:changed", "property:created", "property:updated", "inbox:new",
+      "issue:updated", "issue:created", "issue:deleted", "issue_dependencies:changed", "issue_attachments:changed", "issue_labels:changed", "issue_unread:changed", "issue_metadata:changed", "issue_properties:changed", "property:created", "property:updated", "inbox:new",
       "comment:created", "comment:updated", "comment:deleted",
       "comment:resolved", "comment:unresolved",
       "activity:created",
@@ -1137,6 +1137,10 @@ export function useRealtimeSync(
       if (!issue?.id) return;
       const wsId = getCurrentWsId();
       if (wsId) {
+        if (payload.project_changed || issue.project_id) {
+          void qc.invalidateQueries({ queryKey: payload.project_changed
+            ? issueKeys.dependencyGraphs(wsId) : issueKeys.dependencyGraph(wsId, issue.project_id!) });
+        }
         onIssueUpdated(qc, wsId, issue, {
           assigneeChanged: payload.assignee_changed,
           statusChanged: payload.status_changed,
@@ -1159,7 +1163,10 @@ export function useRealtimeSync(
       const { issue } = p as IssueCreatedPayload;
       if (!issue) return;
       const wsId = getCurrentWsId();
-      if (wsId) onIssueCreated(qc, wsId, issue);
+      if (wsId) {
+        onIssueCreated(qc, wsId, issue);
+        if (issue.project_id) void qc.invalidateQueries({ queryKey: issueKeys.dependencyGraph(wsId, issue.project_id) });
+      }
     });
 
     const unsubIssueDeleted = ws.on("issue:deleted", (p) => {
@@ -1167,6 +1174,7 @@ export function useRealtimeSync(
       if (!issue_id) return;
       const wsId = getCurrentWsId();
       if (wsId) {
+        void qc.invalidateQueries({ queryKey: issueKeys.dependencyGraphs(wsId) });
         onIssueDeleted(qc, wsId, issue_id);
         void onInboxIssueDeleted(qc, wsId, issue_id);
       }
@@ -1191,6 +1199,13 @@ export function useRealtimeSync(
       qc.invalidateQueries({ queryKey: issueKeys.attachments(issue_id) });
       const wsId = getCurrentWsId();
       if (wsId) onIssueAuxiliaryRevision(qc, wsId, issue_id, issue_revision);
+    });
+
+    const unsubIssueDependenciesChanged = ws.on("issue_dependencies:changed", (payload) => {
+      if (!payload || typeof payload !== "object" || !("project_id" in payload)) return;
+      const { project_id } = payload;
+      const wsId = getCurrentWsId();
+      if (wsId && typeof project_id === "string") void qc.invalidateQueries({ queryKey: issueKeys.dependencyGraph(wsId, project_id) });
     });
 
     const unsubIssueMetadataChanged = ws.on("issue_metadata:changed", (p) => {
@@ -1887,6 +1902,7 @@ export function useRealtimeSync(
       unsubIssueAttachmentsChanged();
       unsubIssueLabelsChanged();
       unsubIssueUnreadChanged();
+      unsubIssueDependenciesChanged();
       unsubIssueMetadataChanged();
       unsubIssuePropertiesChanged();
       unsubPropertyChanged.forEach((unsub) => unsub());

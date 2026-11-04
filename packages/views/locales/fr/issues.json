@@ -317,7 +317,18 @@
     "show_sub_issues": "Afficher les sous-tâches",
     "layout_options": "Options de la vue {{layout}}"
   },
+  "dependencies": {
+    "direction": "Prérequis → tâche dépendante",
+    "waits_for": "Attend la fin de",
+    "add": "Ajouter un prérequis",
+    "search": "Rechercher une tâche du projet",
+    "remove": "Retirer le prérequis {{identifier}}",
+    "cycle": "Cette dépendance créerait un cycle.",
+    "save_failed": "Impossible d’enregistrer la dépendance. Réessayez.",
+    "empty": "Aucune tâche dans ce projet."
+  },
   "view": {
+    "dependency": "Dépendances",
     "tooltip_board": "Vue tableau",
     "tooltip_list": "Vue liste",
     "tooltip_table": "Vue grille",

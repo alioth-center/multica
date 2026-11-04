@@ -317,7 +317,18 @@
     "show_sub_issues": "Show sub-issues",
     "layout_options": "{{layout}} options"
   },
+  "dependencies": {
+    "direction": "Prerequisite → dependent issue",
+    "waits_for": "Waits for",
+    "add": "Add prerequisite",
+    "search": "Search project issues",
+    "remove": "Remove {{identifier}} as a prerequisite",
+    "cycle": "This would create a circular dependency.",
+    "save_failed": "Could not save the dependency. Try again.",
+    "empty": "No issues in this project."
+  },
   "view": {
+    "dependency": "Dependency graph",
     "tooltip_board": "Board view",
     "tooltip_list": "List view",
     "tooltip_table": "Table view",
